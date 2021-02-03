@@ -1,5 +1,4 @@
-(function(context) {
-
+(function (context) {
   /**
    * Defines an available color.
    *
@@ -61,48 +60,61 @@
     }
 
     var distanceSq,
-        minDistanceSq = Infinity,
-        rgb,
-        value;
+      minDistanceSq = Infinity,
+      rgb,
+      value;
 
     colors || (colors = nearestColor.DEFAULT_COLORS);
 
     for (var i = 0; i < colors.length; ++i) {
       rgb = colors[i].rgb;
-const double gamma = 2.25;
-      distanceSq = (
-        Math.abs(Math.pow(needle.r/255.0, gamma) - Math.pow(rgb.r/255.0, gamma))*212671.0 +
-        Math.abs(Math.pow(needle.g/255.0, gamma) - Math.pow(rgb.g/255.0, gamma))*715160.0 +
-        Math.abs(Math.pow(needle.b/255.0, gamma) - Math.pow(rgb.b/255.0, gamma))*72169.0
-      );
-// compensate for visual quirks in dark colors
-double linearbrightness[2];
-linearbrightness[0] = (Math.pow(needle.r/255.0, gamma)*212671.0 +
-Math.pow(needle.g/255.0, gamma)*715160.0 +
-Math.pow(needle.b/255.0, gamma)*72169.0)/1000000.0
-;
-linearbrightness[1] = (Math.pow(rgb.r/255.0, gamma)*212671.0 +
-Math.pow(rgb.g/255.0, gamma)*715160.0 +
-Math.pow(rgb.b/255.0, gamma)*72169.0)/1000000.0
-;
-double gammabrightness[2];
-gammabrightness[0] = Math.pow(linearbrightness[0], 1.0/gamma);
-gammabrightness[1] = Math.pow(linearbrightness[1], 1.0/gamma);
-double factor;
-if (linearbrightness[0]==linearbrightness[1]){
-    //derivative: derivative of linear is 1,0;
-    //            derivative of x^const = const*(x^(const-1.0));
-    //            divide the two;
-    factor = ((Math.pow(linearbrightness[0], (1.0/gamma)-1.0))*(1.0/gamma))/1.0;
-}
-else{
-    factor = (gammabrightness[1]-gammabrightness[0])/(linearbrightness[1]-linearbrightness[0]);
-}
-if(factor > 12.92 || factor == 0.0/0.0){
-    factor = 12.92; // sRGB cap, guard zero brightness, ...
-}
-distanceSq *= factor;
-distanceSq /= 1000000.0;
+      const gamma = 2.25;
+      distanceSq =
+        Math.abs(
+          Math.pow(needle.r / 255.0, gamma) - Math.pow(rgb.r / 255.0, gamma)
+        ) *
+          212671.0 +
+        Math.abs(
+          Math.pow(needle.g / 255.0, gamma) - Math.pow(rgb.g / 255.0, gamma)
+        ) *
+          715160.0 +
+        Math.abs(
+          Math.pow(needle.b / 255.0, gamma) - Math.pow(rgb.b / 255.0, gamma)
+        ) *
+          72169.0;
+      // compensate for visual quirks in dark colors
+      let linearbrightness = [];
+      linearbrightness[0] =
+        (Math.pow(needle.r / 255.0, gamma) * 212671.0 +
+          Math.pow(needle.g / 255.0, gamma) * 715160.0 +
+          Math.pow(needle.b / 255.0, gamma) * 72169.0) /
+        1000000.0;
+      linearbrightness[1] =
+        (Math.pow(rgb.r / 255.0, gamma) * 212671.0 +
+          Math.pow(rgb.g / 255.0, gamma) * 715160.0 +
+          Math.pow(rgb.b / 255.0, gamma) * 72169.0) /
+        1000000.0;
+      let gammabrightness = [];
+      gammabrightness[0] = Math.pow(linearbrightness[0], 1.0 / gamma);
+      gammabrightness[1] = Math.pow(linearbrightness[1], 1.0 / gamma);
+      let factor;
+      if (linearbrightness[0] == linearbrightness[1]) {
+        //derivative: derivative of linear is 1,0;
+        //            derivative of x^const = const*(x^(const-1.0));
+        //            divide the two;
+        factor =
+          (Math.pow(linearbrightness[0], 1.0 / gamma - 1.0) * (1.0 / gamma)) /
+          1.0;
+      } else {
+        factor =
+          (gammabrightness[1] - gammabrightness[0]) /
+          (linearbrightness[1] - linearbrightness[0]);
+      }
+      if (factor > 12.92 || factor == 0.0 / 0.0) {
+        factor = 12.92; // sRGB cap, guard zero brightness, ...
+      }
+      distanceSq *= factor;
+      distanceSq /= 1000000.0;
       if (distanceSq < minDistanceSq) {
         minDistanceSq = distanceSq;
         value = colors[i];
@@ -114,7 +126,7 @@ distanceSq /= 1000000.0;
         name: value.name,
         value: value.source,
         rgb: value.rgb,
-        distance: minDistanceSq
+        distance: minDistanceSq,
       };
     }
 
@@ -174,7 +186,7 @@ distanceSq /= 1000000.0;
    */
   nearestColor.from = function from(availableColors) {
     var colors = mapColors(availableColors),
-        nearestColorBase = nearestColor;
+      nearestColorBase = nearestColor;
 
     var matcher = function nearestColor(hex) {
       return nearestColorBase(hex, colors);
@@ -206,15 +218,15 @@ distanceSq /= 1000000.0;
    */
   function mapColors(colors) {
     if (colors instanceof Array) {
-      return colors.map(function(color) {
+      return colors.map(function (color) {
         return createColorSpec(color);
       });
     }
 
-    return Object.keys(colors).map(function(name) {
+    return Object.keys(colors).map(function (name) {
       return createColorSpec(colors[name], name);
     });
-  };
+  }
 
   /**
    * Parses a color from a string.
@@ -237,7 +249,7 @@ distanceSq /= 1000000.0;
   function parseColor(source) {
     var red, green, blue;
 
-    if (typeof source === 'object') {
+    if (typeof source === "object") {
       return source;
     }
 
@@ -253,14 +265,13 @@ distanceSq /= 1000000.0;
         hexMatch = [
           hexMatch.charAt(0) + hexMatch.charAt(0),
           hexMatch.charAt(1) + hexMatch.charAt(1),
-          hexMatch.charAt(2) + hexMatch.charAt(2)
+          hexMatch.charAt(2) + hexMatch.charAt(2),
         ];
-
       } else {
         hexMatch = [
           hexMatch.substring(0, 2),
           hexMatch.substring(2, 4),
-          hexMatch.substring(4, 6)
+          hexMatch.substring(4, 6),
         ];
       }
 
@@ -271,7 +282,9 @@ distanceSq /= 1000000.0;
       return { r: red, g: green, b: blue };
     }
 
-    var rgbMatch = source.match(/^rgb\(\s*(\d{1,3}%?),\s*(\d{1,3}%?),\s*(\d{1,3}%?)\s*\)$/i);
+    var rgbMatch = source.match(
+      /^rgb\(\s*(\d{1,3}%?),\s*(\d{1,3}%?),\s*(\d{1,3}%?)\s*\)$/i
+    );
     if (rgbMatch) {
       red = parseComponentValue(rgbMatch[1]);
       green = parseComponentValue(rgbMatch[2]);
@@ -310,11 +323,10 @@ distanceSq /= 1000000.0;
       color.name = name;
     }
 
-    if (typeof input === 'string') {
+    if (typeof input === "string") {
       color.source = input;
       color.rgb = parseColor(input);
-
-    } else if (typeof input === 'object') {
+    } else if (typeof input === "object") {
       // This is for if/when we're concatenating lists of colors.
       if (input.source) {
         return createColorSpec(input.source, input.name);
@@ -340,8 +352,8 @@ distanceSq /= 1000000.0;
    * parseComponentValue('50%');  // => 128
    */
   function parseComponentValue(string) {
-    if (string.charAt(string.length - 1) === '%') {
-      return Math.round(parseInt(string, 10) * 255 / 100);
+    if (string.charAt(string.length - 1) === "%") {
+      return Math.round((parseInt(string, 10) * 255) / 100);
     }
 
     return Number(string);
@@ -358,8 +370,12 @@ distanceSq /= 1000000.0;
    * rgbToHex({ r: 255, g: 128, b: 0 }); // => '#ff8000'
    */
   function rgbToHex(rgb) {
-    return '#' + leadingZero(rgb.r.toString(16)) +
-      leadingZero(rgb.g.toString(16)) + leadingZero(rgb.b.toString(16));
+    return (
+      "#" +
+      leadingZero(rgb.r.toString(16)) +
+      leadingZero(rgb.g.toString(16)) +
+      leadingZero(rgb.b.toString(16))
+    );
   }
 
   /**
@@ -376,7 +392,7 @@ distanceSq /= 1000000.0;
    */
   function leadingZero(value) {
     if (value.length === 1) {
-      value = '0' + value;
+      value = "0" + value;
     }
     return value;
   }
@@ -385,23 +401,23 @@ distanceSq /= 1000000.0;
    * A map from the names of standard CSS colors to their hex values.
    */
   nearestColor.STANDARD_COLORS = {
-    aqua: '#0ff',
-    black: '#000',
-    blue: '#00f',
-    fuchsia: '#f0f',
-    gray: '#808080',
-    green: '#008000',
-    lime: '#0f0',
-    maroon: '#800000',
-    navy: '#000080',
-    olive: '#808000',
-    orange: '#ffa500',
-    purple: '#800080',
-    red: '#f00',
-    silver: '#c0c0c0',
-    teal: '#008080',
-    white: '#fff',
-    yellow: '#ff0'
+    aqua: "#0ff",
+    black: "#000",
+    blue: "#00f",
+    fuchsia: "#f0f",
+    gray: "#808080",
+    green: "#008000",
+    lime: "#0f0",
+    maroon: "#800000",
+    navy: "#000080",
+    olive: "#808000",
+    orange: "#ffa500",
+    purple: "#800080",
+    red: "#f00",
+    silver: "#c0c0c0",
+    teal: "#008080",
+    white: "#fff",
+    yellow: "#ff0",
   };
 
   /**
@@ -410,22 +426,21 @@ distanceSq /= 1000000.0;
    * of available colors to match.
    */
   nearestColor.DEFAULT_COLORS = mapColors([
-    '#000', // k
-    '#00f', // b
-    '#0f0', // g
-    '#0ff', // c
-    '#f00', // r
-    '#f0f', // m
-    '#ff0'  // y
-    '#fff'  // w
+    "#000", // k
+    "#00f", // b
+    "#0f0", // g
+    "#0ff", // c
+    "#f00", // r
+    "#f0f", // m
+    "#ff0", // y
+    "#fff", // w
   ]);
 
-  nearestColor.VERSION = '0.4.4';
+  nearestColor.VERSION = "0.4.4";
 
-  if (typeof module === 'object' && module && module.exports) {
+  if (typeof module === "object" && module && module.exports) {
     module.exports = nearestColor;
   } else {
     context.nearestColor = nearestColor;
   }
-
-}(this));
+})(this);
