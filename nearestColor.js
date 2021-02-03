@@ -83,7 +83,7 @@
         ) *
           72169.0;
       // compensate for visual quirks in dark colors
-      let linearbrightness = {};
+      let linearbrightness = [];
       linearbrightness[0] =
         (Math.pow(needle.r / 255.0, gamma) * 212671.0 +
           Math.pow(needle.g / 255.0, gamma) * 715160.0 +
@@ -94,7 +94,7 @@
           Math.pow(rgb.g / 255.0, gamma) * 715160.0 +
           Math.pow(rgb.b / 255.0, gamma) * 72169.0) /
         1000000.0;
-      let gammabrightness = {};
+      let gammabrightness = [];
       gammabrightness[0] = Math.pow(linearbrightness[0], 1.0 / gamma);
       gammabrightness[1] = Math.pow(linearbrightness[1], 1.0 / gamma);
       let factor;
